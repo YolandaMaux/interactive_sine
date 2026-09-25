@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""startup.py – Welcome / info tab for this app. (NiceGUI 3.0+ port)
+"""startup_interactive_sine.py – Welcome / info content for the Interactive Sine app.
 
-Drop this file unchanged into any app in the framework.
-Customise the content inside render_startup_page() to match your app —
-everything else (sandbox wiring, tab structure) stays the same.
+main_interactive_sine.py renders GETTING_STARTED_MARKDOWN inside the app's
+info bubble (requirement 1). render_startup_page(sb) is kept unchanged from
+the notebook-style startup.py so the module still works anywhere a Startup
+tab is wanted — only the markdown string itself was hoisted to module level.
 """
 
 from loguru import logger
@@ -15,10 +16,17 @@ try:
 except ImportError:
     from sandbox import Sandbox  # type: ignore[no-redef]
 
+# ── Getting Started text (rendered in the app info bubble, requirement 1) ─────
+GETTING_STARTED_MARKDOWN = """
+1. Navigate to the **▶ Run** tab to use the application.
+2. Fill in all required fields and press **Run**.
+3. Results appear in the output tabs below the form.
+4. Review activity and errors in the **📋 Logs** tab.
+"""
 
 def render_startup_page(sb: Sandbox, app_name: str = "App", app_version: str = "1.0") -> None:
     """
-    Render the Startup tab.
+    Render the Startup tab. (unchanged behaviour from the notebook startup.py)
 
     Parameters
     ----------
@@ -37,31 +45,26 @@ def render_startup_page(sb: Sandbox, app_name: str = "App", app_version: str = "
             ui.markdown(f"## 🚀 {app_name} `v{app_version}`")
             ui.separator()
 
-            # ── How to use ─────────────────────────────────────────────────────────
-            # Edit this block to describe your specific app's workflow.
+            # ── How to use ─────────────────────────────────────────────────
+            # Same text the main_interactive_sine.py info bubble shows.
             ui.label("Getting Started").classes("text-xl font-semibold")
-            ui.markdown("""
-1. Navigate to the **▶ Run** tab to use the application.
-2. Fill in all required fields and press **Run**.
-3. Results appear in the output tabs below the form.
-4. Review activity and errors in the **📋 Logs** tab.
-""")
+            ui.markdown(GETTING_STARTED_MARKDOWN)
 
             ui.separator()
 
-            # ── Session metrics ────────────────────────────────────────────────────
+            # ── Session metrics ────────────────────────────────────────────
             ui.label("📊 Session Status").classes("text-xl font-semibold")
             runs = sb.state("_run_count") or 0
 
             with ui.row().classes("gap-6"):
                 col1 = ui.column()
                 col2 = ui.column()
-            with col1:
-                ui.label("Runs this session").classes("text-sm text-gray-500")
-                ui.label(str(runs)).classes("text-3xl font-bold text-blue-600")
-            with col2:
-                ui.label("Sandbox ID").classes("text-sm text-gray-500")
-                ui.label(str(sb.tenant_id)).classes("text-3xl font-bold text-blue-600")
+                with col1:
+                    ui.label("Runs this session").classes("text-sm text-gray-500")
+                    ui.label(str(runs)).classes("text-3xl font-bold text-blue-600")
+                with col2:
+                    ui.label("Sandbox ID").classes("text-sm text-gray-500")
+                    ui.label(str(sb.tenant_id)).classes("text-3xl font-bold text-blue-600")
 
             if runs:
                 ui.label(f"✅ {runs} run(s) completed this session.").classes("text-green-700 font-semibold")
@@ -80,6 +83,6 @@ def render_startup_page(sb: Sandbox, app_name: str = "App", app_version: str = "
 """)
             ui.separator()
             ui.label("Sandbox isolates all session state per user. "
-                      "Multiple users can run this app simultaneously on the same server.").classes("text-xs text-gray-500")
+                     "Multiple users can run this app simultaneously on the same server.").classes("text-xs text-gray-500")
 
     logger.info(f"Startup page rendered for {app_name}")
